@@ -2,18 +2,25 @@
 
 pragma solidity ^0.8.21;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-contract DenLibNFT is ERC721URIStorage, Ownable {
-    constructor() ERC721("DenLib Musks", "DLM") {}
+contract DenLibNft is ERC721 {
+    uint256 private s_tokenCounter;
+    mapping (uint256 => string) private s_tokenIdToUri;
 
-    function mint(
-        address _to,
-        uint256 _tokenId,
-        string calldata _uri
-    ) external onlyOwner {
-        _mint(_to, _tokenId);
-        _setTokenURI(_tokenId, _uri);
+    constructor() ERC721("DenLibMusks", "DLM") {
+        s_tokenCounter = 0;
     }
+
+    function mintNft(string memory tokenUri) public {
+        s_tokenIdToUri[s_tokenCounter] = tokenUri;
+        _safeMint(msg.sender, s_tokenCounter);
+        s_tokenCounter++;
+    }
+
+    function tokenURI(
+        uint256 tokenId)
+        public view override returns (string memory) {
+            return s_tokenIdToUri[tokenId];
+        }
 }
